@@ -5,10 +5,12 @@ from models import db, Vaga, User, LoginForm, RegisterForm
 from datetime import date
 from flask_bcrypt import Bcrypt
 from flask_login import login_user, LoginManager, login_required, logout_user, current_user
+from dotenv import load_dotenv
 
+load_dotenv()
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
+app.secret_key = os.getenv('FLASK_SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///main.sqlite3'
 app.config['SQLALCHEMY_BINDS'] = {'users': 'sqlite:///users.sqlite3'}
 db.init_app(app)
@@ -78,11 +80,13 @@ def register():
     if form.validate_on_submit():
         hash_pw = bcrypt.generate_password_hash(form.password.data)
         new_user = User(username=form.username.data, password=hash_pw)
+        check_user = User.query.filter_by(username=new_user.username).first()
+        if check_user:
+            flash('Usuario ja resgistrado.')
+
         db.session.add(new_user)
         db.session.commit()
         return redirect(url_for('login'))
-
-    flash('Usuario ja resgistrado.')
 
     return render_template('register.html', form=form)
 
@@ -97,8 +101,8 @@ def login():
             if bcrypt.check_password_hash(user.password, form.password.data):
                 login_user(user)
                 return redirect(url_for('index'))
-        else:
-            flash('Usuario errado ou nao registrado.')
+            else:
+                flash('Usuario errado ou nao registrado.')
 
     return render_template('login.html', form=form)
 
@@ -113,4 +117,4 @@ def logout():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-        app.run(debug=True)
+        app.run(host='0.0.0.0', port=5000, debug=False)
