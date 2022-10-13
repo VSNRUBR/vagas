@@ -1,10 +1,9 @@
-from crypt import methods
 import os
+import re
 
 from flask import Flask, url_for, render_template, request, session, redirect
 from models import db, Vaga
-from dotenv import load_dotenv
-from datetime import date, datetime
+from datetime import date
 
 
 app = Flask(import_name='app')
@@ -36,7 +35,7 @@ def nova_vaga():
         try:
             db.session.add(new_v)
             db.session.commit()
-            return redirect('/')
+            return redirect(url_for('index'))
 
         except:
             return 'Erro ao adicionar vaga'
@@ -44,6 +43,18 @@ def nova_vaga():
     else:
         return render_template('nova_vaga.html')
 
+@app.route('/delete/<int:id>')
+def delete(id):
+    row_to_delete = Vaga.query.get(id)
+
+    try:
+        db.session.delete(row_to_delete)
+        db.session.commit()
+
+        return redirect(url_for('index'))
+
+    except:
+        return 'Erro ao deletar vaga.'
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -54,6 +65,10 @@ def login():
 
     return render_template('login.html')
 
+@app.route('/logout')
+def logout():
+    session.pop('user', None)
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     with app.app_context():

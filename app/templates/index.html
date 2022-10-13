@@ -24,9 +24,13 @@
       <td>{{ vaga.vaga }}</td>
       <td>{{ vaga.data }}</td>
       <td>{{ vaga.link }}</td>
+      <td>
+        <a href="/delete/{{ vaga.id }}" onclick="return confirm('Tem certeza que deseja deletar esta vaga?');">Deletar vaga</a>
+      </td>
     </tr>
     {% endfor %}
   </table>
   {% endif %}
 </div>
+<a href="/logout">Logout</a>
 {% endblock %}
