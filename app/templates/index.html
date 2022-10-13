@@ -6,6 +6,27 @@
 
 {% block body %}
 <div class="content">
-  <h1>OLAR</h1>
+  <h1>Bem-vindo, {{ user }}!!</h1>
+  <h2>Vagas</h2>
+  {% if vagas|length < 1 %}
+  <h3>Nenhuma vaga ativa. Preencha <a href="/nova_vaga">este form</a>.</h3>
+  {% else %}
+  <table>
+    <tr>
+      <th>Empresa</th>
+      <th>Vaga</th>
+      <th>Data de inscricao</th>
+      <th>Link</th>
+    </tr>
+    {% for vaga in vagas %}
+    <tr>
+      <td>{{ vaga.empresa }}</td>
+      <td>{{ vaga.vaga }}</td>
+      <td>{{ vaga.data }}</td>
+      <td>{{ vaga.link }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% endif %}
 </div>
 {% endblock %}
